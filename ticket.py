@@ -13,6 +13,7 @@ from sqlalchemy_utils.types.uuid import UUIDType as UNIQUEIDENTIFIER
 from sqlalchemy.orm import validates
 from base import Base, IIQ_Datatype as IIQ
 from custom_fields import TicketCustomFields
+from types import SimpleNamespace as Namespace
 import config
 import requests
 import uuid
@@ -67,6 +68,9 @@ class Ticket(Base, IIQ):
     Subject = Column(String(length=config.STRING_LENGTH))
     IssueDescription = Column(VARCHAR(None))
     Status = Column(String(length=config.STRING_LENGTH))    # Nested
+    IssueCategoryId = Column(String(length=config.STRING_LENGTH))    # Nested
+    IssueCategoryName = Column(String(length=config.STRING_LENGTH))    # Nested
+    ModelName = Column(String(length=config.STRING_LENGTH))    # Nested
 
     fields = [
         'TicketId', 'TicketNumber', 'CreatedDate', 'StartedDate', 'ClosedDate',
@@ -74,7 +78,7 @@ class Ticket(Base, IIQ):
         'IsDeleted', 'AssignedToUserId', 'IsClosed', 'WorkflowStepId',
         'LocationId', 'LocationName', 'ModifiedDate', 'SiteId', 'UserId',
         'Username', 'Priority', 'Subject', 'IssueDescription', 'Status',
-        'TeamId', 'TeamName'
+        'TeamId', 'TeamName', 'IssueCategoryId', 'IssueCategoryName', 'ModelName'
     ]
 
     # Validator ensures empty strings are entered as null
@@ -107,6 +111,15 @@ class Ticket(Base, IIQ):
         self.Status = IIQ.find_element(data, 'WorkflowStep', 'StepName')
         self.TeamId = IIQ.find_element(data, 'AssignedToTeam', 'TeamId')
         self.TeamName = IIQ.find_element(data, 'AssignedToTeam', 'TeamName')
+        self.IssueCategoryId = IIQ.find_element(data, 'Issue', 'IssueCategoryId')
+        self.IssueCategoryName = IIQ.find_element(data, 'Issue', 'IssueCategoryName')
+        assets = IIQ.find_element(data, 'Assets')
+        if assets:
+            for idx, el in enumerate(assets):
+                if idx == 0:
+                    self.ModelName = IIQ.find_element(el, 'ModelName')
+        else:
+            self.ModelName = ''
 
     @staticmethod
     def get_data_request(page):
