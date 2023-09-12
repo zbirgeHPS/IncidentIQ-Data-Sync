@@ -28,6 +28,7 @@ TICKETS_TABLE_NAME = cf.get('Tables', 'Tickets')
 TICKETS_CF_TABLE_NAME = cf.get('Tables', 'TicketsCustomFields')
 ROOMS_TABLE_NAME = cf.get('Tables', 'Rooms')
 TEAMS_TABLE_NAME = cf.get('Tables', 'Teams')
+CATEGORIES_TABLE_NAME = cf.get('Tables', 'Categories')
 # Incident IQ Credentials
 IIQ_INSTANCE = cf.get('IncidentIQ', 'Instance')
 IIQ_TOKEN = cf.get('IncidentIQ', 'Token')

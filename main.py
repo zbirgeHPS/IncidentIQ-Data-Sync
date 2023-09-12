@@ -18,6 +18,7 @@ from asset import Asset
 from ticket import Ticket
 from room import Room
 from team import Team
+from category import Category
 from custom_fields import UserCustomFields, AssetCustomFields, TicketCustomFields
 import config
 
@@ -91,6 +92,7 @@ if __name__ == '__main__':
     __execute_sync(Location)
     __execute_sync(Asset)
     __execute_sync(Room)
+    __execute_sync(Category)
 
     # Useful for testing without threading issues
     #num_pages = Asset.get_num_pages()
