@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, Integer, Date, Boolean, Numeric
 from sqlalchemy_utils.types.uuid import UUIDType as UNIQUEIDENTIFIER
 from sqlalchemy.orm import validates
 from base import Base, IIQ_Datatype as IIQ
+from uuid import uuid4
 import config
 import requests
 
@@ -20,7 +21,7 @@ class Category(Base, IIQ):
         __table_args__ = {'schema': config.SCHEMA}
 
     AppId = Column(String(length=config.STRING_LENGTH))
-    CategoryId = Column(UNIQUEIDENTIFIER(binary=False), primary_key=True)
+    CategoryId = Column(UNIQUEIDENTIFIER(binary=False))
     CategoryTypeId = Column(UNIQUEIDENTIFIER(binary=False))
     CategoryTypeName = Column(String(length=config.STRING_LENGTH))
     Description = Column(String(length=config.STRING_LENGTH))
@@ -28,16 +29,17 @@ class Category(Base, IIQ):
     Level = Column(Integer)
     Name = Column(String(length=config.STRING_LENGTH))
     NameWithParent = Column(String(length=config.STRING_LENGTH))
-    ParentCategoryId = Column(UNIQUEIDENTIFIER(binary=False))
+    ParentCategoryId =  Column(UNIQUEIDENTIFIER(binary=False))
     ParentCategoryName = Column(String(length=config.STRING_LENGTH))
     Scope = Column(String(length=config.STRING_LENGTH))
-    SiteId = Column(UNIQUEIDENTIFIER(binary=False))
+    SiteId =  Column(UNIQUEIDENTIFIER(binary=False))
     SortOrder = Column(Integer)
+    DbId = Column(UNIQUEIDENTIFIER(binary=False), primary_key=True)
 
     fields = [
         'AppId', 'CategoryId', 'CategoryTypeId', 'CategoryTypeName', 'Description',
         'Icon', 'Level', 'Name', 'NameWithParent', 'ParentCategoryId',
-        'ParentCategoryName', 'Scope', 'SiteId', 'SortOrder'
+        'ParentCategoryName', 'Scope', 'SiteId', 'SortOrder', 'DbId'
     ]
 
     @validates(*fields)
@@ -45,24 +47,24 @@ class Category(Base, IIQ):
         return super().validate_inserts(key, value)
 
     def __init__(self, data):
-        # Call find_element on fields which are marked optional to be returned by the
-        # IncidentIQ API. This is especially important to note for nested fields, the
-        # parent of which can be optional even though when included there can
-        # be required fields
-        self.AppId = data.AppId
-        self.CategoryId = data.CategoryId
-        self.CategoryTypeId = data.CategoryTypeId
-        self.CategoryTypeName = data.CategoryTypeName
-        self.Description = data.Description
-        self.Icon = data.Icon
-        self.Level = data.Level
-        self.Name = data.Name
-        self.NameWithParent = data.NameWithParent
-        self.ParentCategoryId = data.ParentCategoryId
-        self.ParentCategoryName = data.ParentCategoryName
-        self.Scope = data.Scope
-        self.SiteId = data.ParentCaSiteIdtegoryName
-        self.SortOrder = data.SortOrder
+        # Extract fields from the raw data, optional nested fields
+        # can be retrieved easily with find_element *args (See asset.py)
+        for field in self.fields:
+        # For non-nested fields that exist at the first level of the JSON
+        # we can use setattr to assign values, since the fields are
+        # named exactly as they appear in the JSON. For example, an asset
+        # JSON response will have a field 'AssetId' at the base level of that item.
+        # Thus, find_element can grab it simply by being passed 'AssetId'. By design,
+        # the column is also named 'AssetId', so we can iterate simply and set these fields.
+            setattr(self, field, IIQ.find_element(data, field))
+
+        # Nested fields are more complex, and thus are commented in the declaration
+        # as Nested. We simply path these out by hand since there are only a few, and
+        # often they are purposeful inclusions that aren't nescessary but useful to
+        # end users. This is harmless even if they are optional fields in the API response,
+        # since find_element will set them to None by default
+
+        self.DbId = uuid4()
 
     @staticmethod
     def get_data_request(page_number):

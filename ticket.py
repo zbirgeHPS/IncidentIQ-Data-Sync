@@ -68,8 +68,9 @@ class Ticket(Base, IIQ):
     Subject = Column(String(length=config.STRING_LENGTH))
     IssueDescription = Column(VARCHAR(None))
     Status = Column(String(length=config.STRING_LENGTH))    # Nested
-    IssueCategoryId = Column(String(length=config.STRING_LENGTH))    # Nested
+    IssueCategoryId = Column(UNIQUEIDENTIFIER(binary=False))    # Nested
     IssueCategoryName = Column(String(length=config.STRING_LENGTH))    # Nested
+    IssueCategoryScope = Column(String(length=config.STRING_LENGTH))    # Nested
     ModelName = Column(String(length=config.STRING_LENGTH))    # Nested
 
     fields = [
@@ -78,7 +79,8 @@ class Ticket(Base, IIQ):
         'IsDeleted', 'AssignedToUserId', 'IsClosed', 'WorkflowStepId',
         'LocationId', 'LocationName', 'ModifiedDate', 'SiteId', 'UserId',
         'Username', 'Priority', 'Subject', 'IssueDescription', 'Status',
-        'TeamId', 'TeamName', 'IssueCategoryId', 'IssueCategoryName', 'ModelName'
+        'TeamId', 'TeamName', 'IssueCategoryId', 'IssueCategoryName', 'ModelName',
+        'IssueCategoryScope'
     ]
 
     # Validator ensures empty strings are entered as null
@@ -113,6 +115,7 @@ class Ticket(Base, IIQ):
         self.TeamName = IIQ.find_element(data, 'AssignedToTeam', 'TeamName')
         self.IssueCategoryId = IIQ.find_element(data, 'Issue', 'IssueCategoryId')
         self.IssueCategoryName = IIQ.find_element(data, 'Issue', 'IssueCategoryName')
+        self.IssueCategoryScope = IIQ.find_element(data, 'Issue', 'IssueCategoryScope')
         assets = IIQ.find_element(data, 'Assets')
         if assets:
             for idx, el in enumerate(assets):
