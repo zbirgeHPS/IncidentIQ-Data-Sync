@@ -8,7 +8,7 @@ IncidentIQ to insert into the specified database.
 """
 
 from requests.models import HTTPError
-from sqlalchemy import Column, String, Integer, Date, Boolean, DateTime, VARCHAR
+from sqlalchemy import Column, String, Boolean, DateTime, VARCHAR
 from sqlalchemy_utils.types.uuid import UUIDType as UNIQUEIDENTIFIER
 from sqlalchemy.orm import validates
 from base import Base, IIQ_Datatype as IIQ
@@ -16,8 +16,6 @@ from custom_fields import TicketCustomFields
 from types import SimpleNamespace as Namespace
 import config
 import requests
-import uuid
-import json
 
 
 class Ticket(Base, IIQ):
@@ -127,7 +125,7 @@ class Ticket(Base, IIQ):
     @staticmethod
     def get_data_request(page):
         url = "https://" + config.IIQ_INSTANCE + "/api/v1.0/tickets?$p=" + str(page) + "&$s=" + config.PAGE_SIZE + "&$d=Descending&$o=TicketCreatedDate"
-        payload = "{\n    \"OnlyShowDeleted\": false,\n    \"FilterByViewPermission\": true\n}"
+        payload = "{\n    \"OnlyShowDeleted\": false,\n    \"FilterByViewPermission\": false\n}"
         files = {}
         headers = {
             'Client': 'WebBrowser',

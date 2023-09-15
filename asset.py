@@ -141,7 +141,8 @@ class Asset(Base, IIQ):
         url = "https://" + config.IIQ_INSTANCE + "/api/v1.0/assets/?$p=" + str(
             page) + "&$s=" + config.PAGE_SIZE + "&$d=Ascending&$o=AssetTag"
 
-        payload = "{\n    \"OnlyShowDeleted\": false,\n    \"Filters\": [\n        {\n            \"Facet\": \"AssetType\",\n            \"Id\": \"2a1561e5-34ff-4fcf-87de-2a146f0e1c01\"\n        }\n    ],\n    \"FilterByViewPermission\": true\n}"
+        # payload = "{\n    \"OnlyShowDeleted\": false,\n    \"Filters\": [\n        {\n            \"Facet\": \"AssetType\",\n            \"Id\": \"2a1561e5-34ff-4fcf-87de-2a146f0e1c01\"\n        }\n    ],\n    \"FilterByViewPermission\": true\n}"
+        payload = "{\n    \"OnlyShowDeleted\": false,\n    \"FilterByViewPermission\": true\n}"
         headers = {
             'Connection': 'keep-alive',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
